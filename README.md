@@ -17,7 +17,7 @@ Please file an [issue](https://github.com/codelibs/opensearch-minhash/issues "is
 
 ## Installation
 
-    $ $ES_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:1.1.0
+    $ $OPENSEARCH_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:1.1.0
 
 ## Getting Started
 

@@ -65,7 +65,7 @@ public class MinHashFieldMapper extends ParametrizedFieldMapper {
                 .docValuesParam(m -> toType(m).hasDocValues, true);
 
         private final Parameter<Boolean> stored = Parameter
-                .storeParam(m -> toType(m).stored, false);
+                .storeParam(m -> toType(m).stored, true);
 
         private final Parameter<String> nullValue = Parameter.stringParam(
                 "null_value", false, m -> toType(m).nullValue, null);

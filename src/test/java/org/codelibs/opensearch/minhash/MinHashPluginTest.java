@@ -162,7 +162,7 @@ public class MinHashPluginTest extends TestCase {
     private void test_get(final Client client, final String index,
             final String type, final String id, final String hash1,
             final String hash2, final String hash3) {
-        final GetResponse response = client.prepareGet(index, type, id)
+        final GetResponse response = client.prepareGet(index, id)
                 .setStoredFields(new String[] { "_source", "minhash_value1",
                         "minhash_value2", "minhash_value3", "minhash_value4" })
                 .execute().actionGet();

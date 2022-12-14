@@ -27,8 +27,8 @@
         <version>9</version>
     </parent>
 	<properties>
-		<opensearch.version>1.3.2</opensearch.version>
-		<opensearch.runner.version>1.3.2.0</opensearch.runner.version>
+		<opensearch.version>1.3.7</opensearch.version>
+		<opensearch.runner.version>1.3.7.0</opensearch.runner.version>
 		<opensearch.plugin.classname>org.codelibs.opensearch.minhash.MinHashPlugin</opensearch.plugin.classname>
 		<maven.compiler.target>11</maven.compiler.target>
 		<lucene.version>8.10.1</lucene.version>

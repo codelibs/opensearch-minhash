@@ -19,7 +19,7 @@ import org.apache.lucene.index.IndexableField;
 import org.apache.lucene.util.BytesRef;
 import org.codelibs.minhash.MinHash;
 import org.opensearch.common.lucene.Lucene;
-import org.opensearch.common.xcontent.XContentParser;
+import org.opensearch.core.xcontent.XContentParser;
 import org.opensearch.index.analysis.NamedAnalyzer;
 import org.opensearch.index.mapper.FieldMapper;
 import org.opensearch.index.mapper.KeywordFieldMapper;

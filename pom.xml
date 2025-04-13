@@ -21,11 +21,6 @@
         <developerConnection>scm:git:git@github.com:codelibs/opensearch-minhash.git</developerConnection>
         <url>git@github.com:codelibs/opensearch-minhash.git</url>
     </scm>
-    <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>9</version>
-    </parent>
 	<properties>
 		<opensearch.version>2.19.1</opensearch.version>
 		<opensearch.runner.version>2.19.1.0</opensearch.runner.version>
@@ -33,6 +28,7 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<lucene.version>9.12.1</lucene.version>
 		<log4j.version>2.21.0</log4j.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
 		<plugins>
@@ -93,6 +89,29 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.2.7</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.central</groupId>
+				<artifactId>central-publishing-maven-plugin</artifactId>
+				<version>0.7.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<publishingServerId>central</publishingServerId>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

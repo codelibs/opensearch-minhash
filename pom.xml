@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.codelibs.opensearch</groupId>
 	<artifactId>opensearch-minhash</artifactId>
-	<version>2.19.1-SNAPSHOT</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>This plugin provides b-bit minhash algorism.</description>
 	<inceptionYear>2011</inceptionYear>
@@ -16,17 +16,30 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<organization>
+		<name>CodeLibs Project</name>
+		<url>https://www.codelibs.org/</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>shinsuke</id>
+			<name>Shinsuke Sugaya</name>
+			<email>shinsuke.sugaya@codelibs.co</email>
+			<organization>CodeLibs Inc.</organization>
+			<organizationUrl>https://codelibs.co</organizationUrl>
+		</developer>
+	</developers>
     <scm>
         <connection>scm:git:git@github.com:codelibs/opensearch-minhash.git</connection>
         <developerConnection>scm:git:git@github.com:codelibs/opensearch-minhash.git</developerConnection>
         <url>git@github.com:codelibs/opensearch-minhash.git</url>
     </scm>
 	<properties>
-		<opensearch.version>2.19.1</opensearch.version>
-		<opensearch.runner.version>2.19.1.0</opensearch.runner.version>
+		<opensearch.version>3.0.0</opensearch.version>
+		<opensearch.runner.version>3.0.0.0-SNAPSHOT</opensearch.runner.version>
 		<opensearch.plugin.classname>org.codelibs.opensearch.minhash.MinHashPlugin</opensearch.plugin.classname>
-		<maven.compiler.target>11</maven.compiler.target>
-		<lucene.version>9.12.1</lucene.version>
+		<maven.compiler.target>21</maven.compiler.target>
+		<lucene.version>10.1.0</lucene.version>
 		<log4j.version>2.21.0</log4j.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -34,7 +47,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.12.1</version>
+				<version>3.14.0</version>
 				<configuration>
 					<release>${maven.compiler.target}</release>
 					<encoding>UTF-8</encoding>
@@ -42,7 +55,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>2.22.2</version>
+				<version>3.5.0</version>
 				<configuration>
 					<includes>
 						<include>**/*Test.java</include>
@@ -52,7 +65,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-source-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.3.1</version>
 				<executions>
 					<execution>
 						<id>attach-sources</id>
@@ -64,7 +77,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.6.3</version>
+				<version>3.11.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
 					<docencoding>UTF-8</docencoding>
@@ -72,8 +85,26 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<groupId>com.mycila</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>5.0.0</version>
+				<configuration>
+					<header>https://www.codelibs.org/assets/license/header.txt</header>
+					<properties>
+						<year>2025</year>
+					</properties>
+					<includes>
+						<include>src/**/*.java</include>
+					</includes>
+					<encoding>UTF-8</encoding>
+					<headerDefinitions>
+						<headerDefinition>https://www.codelibs.org/assets/license/header-definition-2.xml</headerDefinition>
+					</headerDefinitions>
+				</configuration>
+			</plugin>
+			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
-				<version>3.6.0</version>
+				<version>3.7.1</version>
 				<configuration>
 					<appendAssemblyId>false</appendAssemblyId>
 					<outputDirectory>${project.build.directory}/releases/</outputDirectory>
@@ -115,6 +146,23 @@
 			</plugin>
 		</plugins>
 	</build>
+	<repositories>
+		<repository>
+			<id>snapshots.central.sonatype.com</id>
+			<url>https://central.sonatype.com/repository/maven-snapshots</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>codelibs.org</id>
+			<name>CodeLibs Repository</name>
+			<url>https://maven.codelibs.org/</url>
+		</repository>
+	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>com.google.guava</groupId>

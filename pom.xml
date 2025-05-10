@@ -64,18 +64,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>3.3.1</version>
-				<executions>
-					<execution>
-						<id>attach-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>3.11.2</version>
 				<configuration>
@@ -89,17 +77,21 @@
 				<artifactId>license-maven-plugin</artifactId>
 				<version>5.0.0</version>
 				<configuration>
-					<header>https://www.codelibs.org/assets/license/header.txt</header>
+					<encoding>UTF-8</encoding>
 					<properties>
 						<year>2025</year>
 					</properties>
-					<includes>
-						<include>src/**/*.java</include>
-					</includes>
-					<encoding>UTF-8</encoding>
 					<headerDefinitions>
 						<headerDefinition>https://www.codelibs.org/assets/license/header-definition-2.xml</headerDefinition>
 					</headerDefinitions>
+					<licenseSets>
+						<licenseSet>
+							<header>https://www.codelibs.org/assets/license/header.txt</header>
+							<includes>
+								<include>src/**/*.java</include>
+							</includes>
+						</licenseSet>
+					</licenseSets>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -167,7 +159,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>33.0.0-jre</version>
+			<version>33.4.3-jre</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.codehaus.mojo</groupId>
@@ -194,24 +186,24 @@
 		<dependency>
 			<groupId>org.codelibs</groupId>
 			<artifactId>minhash</artifactId>
-			<version>0.4.0</version>
+			<version>0.5.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.opensearch</groupId>
 			<artifactId>opensearch</artifactId>
 			<version>${opensearch.version}</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.lucene</groupId>
+					<artifactId>lucene-analysis-common</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
 			<version>${log4j.version}</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analysis-common</artifactId>
-			<version>${lucene.version}</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

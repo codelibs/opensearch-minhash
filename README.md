@@ -279,12 +279,6 @@ mvn clean package assembly:single
 ```bash
 # Run unit tests
 mvn test
-
-# Run full integration tests
-./scripts/run.sh
-
-# Quick functionality test (requires running OpenSearch)
-./test.sh
 ```
 
 ### Contributing

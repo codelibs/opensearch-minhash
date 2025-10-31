@@ -38,8 +38,8 @@
       <tag>HEAD</tag>
   </scm>
 	<properties>
-		<opensearch.version>3.3.0</opensearch.version>
-		<opensearch.runner.version>3.3.0.0</opensearch.runner.version>
+		<opensearch.version>3.3.2</opensearch.version>
+		<opensearch.runner.version>3.3.2.0</opensearch.runner.version>
 		<opensearch.plugin.classname>org.codelibs.opensearch.minhash.MinHashPlugin</opensearch.plugin.classname>
 		<maven.compiler.target>21</maven.compiler.target>
 		<lucene.version>10.3.1</lucene.version>

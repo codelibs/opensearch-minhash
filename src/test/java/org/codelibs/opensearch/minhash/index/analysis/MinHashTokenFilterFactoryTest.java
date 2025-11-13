@@ -17,17 +17,9 @@ package org.codelibs.opensearch.minhash.index.analysis;
 
 import static org.codelibs.opensearch.runner.OpenSearchRunner.newConfigs;
 
-import java.io.StringReader;
-
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.codelibs.opensearch.runner.OpenSearchRunner;
 import org.opensearch.common.settings.Settings;
 import org.opensearch.common.settings.Settings.Builder;
-import org.opensearch.env.Environment;
-import org.opensearch.index.Index;
-import org.opensearch.index.IndexSettings;
-import org.opensearch.index.analysis.AnalysisRegistry;
 
 import junit.framework.TestCase;
 

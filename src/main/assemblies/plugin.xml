@@ -17,7 +17,6 @@
 			<useTransitiveFiltering>true</useTransitiveFiltering>
 			<excludes>
 				<exclude>org.apache.lucene:lucene-analysis-common</exclude>
-				<exclude>org.codelibs.opensearch:opensearch-engine-server</exclude>
 			</excludes>
 		</dependencySet>
 	</dependencySets>

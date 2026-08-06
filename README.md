@@ -1,78 +1,58 @@
 # OpenSearch MinHash Plugin
 
 [![Java CI with Maven](https://github.com/codelibs/opensearch-minhash/actions/workflows/maven.yml/badge.svg)](https://github.com/codelibs/opensearch-minhash/actions/workflows/maven.yml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.codelibs.opensearch/opensearch-minhash/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.codelibs.opensearch/opensearch-minhash)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Maven Central](https://img.shields.io/maven-central/v/org.codelibs.opensearch/opensearch-minhash)](https://central.sonatype.com/artifact/org.codelibs.opensearch/opensearch-minhash)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
-A high-performance OpenSearch plugin that provides **b-bit MinHash algorithm** support for efficient similarity detection and approximate nearest neighbor search. This plugin enables powerful document deduplication, content clustering, and large-scale similarity analysis directly within OpenSearch indices.
+OpenSearch MinHash Plugin adds b-bit MinHash support to OpenSearch. A compact
+signature is computed for each document at index time, so that near-duplicate
+documents produce identical or nearly identical signatures. Because the signature is
+stored as an ordinary field, it can be used for deduplication, collapsing and
+grouping with the queries and aggregations OpenSearch already provides.
 
-## ✨ Key Features
+The plugin registers two components:
 
-- **🚀 High Performance**: Efficient b-bit MinHash implementation with configurable parameters
-- **🔍 Similarity Detection**: Advanced document similarity detection using MinHash signatures
-- **📊 Deduplication**: Automatic duplicate document identification and removal
-- **🎯 Clustering Support**: Group similar documents based on MinHash signatures
-- **⚡ Real-time Processing**: Generate MinHash values during document indexing
-- **🛠️ Flexible Configuration**: Customizable hash functions, bit sizes, and seed values
-- **📈 Scalable**: Optimized for large-scale document collections
+- a `minhash` token filter that reduces an analyzed token stream to a MinHash signature
+- a `minhash` field type that stores the signature produced by a dedicated analyzer
 
-## 🏗️ Architecture
+## Compatibility
 
-The plugin integrates seamlessly with OpenSearch's analysis pipeline through three core components:
+| Plugin Version | OpenSearch Version | Lucene Version | Java Version |
+|----------------|--------------------|----------------|--------------|
+| 3.8.x          | 3.8.0              | 10.5.0         | 21+          |
+| 3.7.x          | 3.7.0              | 10.4.0         | 21+          |
 
-- **`MinHashPlugin`**: Main plugin entry point that registers token filters and field mappers
-- **`MinHashFieldMapper`**: Implements the "minhash" field type for storing binary MinHash values
-- **`MinHashTokenFilterFactory`**: Provides the "minhash" token filter for analysis pipelines
+Released versions are listed on
+[Maven Central](https://central.sonatype.com/artifact/org.codelibs.opensearch/opensearch-minhash/versions).
 
-## 📋 Version Compatibility
-
-| Plugin Version | OpenSearch Version | Java Version | Lucene Version |
-|---------------|--------------------|--------------|----------------|
-| 3.8.x         | 3.8.0              | 21+          | 10.5.0         |
-| 3.7.x         | 3.7.0              | 21+          | 10.4.0         |
-
-[📦 All Versions in Maven Repository](https://repo1.maven.org/maven2/org/codelibs/opensearch/opensearch-minhash/)
-
-## 🚀 Installation
-
-### Quick Install from Maven Central
+## Installation
 
 ```bash
 $OPENSEARCH_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:3.8.0
 ```
 
-### Build and Install from Source
+Restart the node, then confirm that the plugin is loaded:
 
 ```bash
-# Clone the repository
-git clone https://github.com/codelibs/opensearch-minhash.git
-cd opensearch-minhash
-
-# Build the plugin
-mvn clean package
-
-# Install from local build
-$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
-
-# Restart OpenSearch
-$OPENSEARCH_HOME/bin/opensearch-node restart
-```
-
-### Verify Installation
-
-```bash
-# Check installed plugins
 $OPENSEARCH_HOME/bin/opensearch-plugin list
-
-# Expected output should include:
-# opensearch-minhash
+# minhash
 ```
 
-## 🎯 Quick Start
+To install a locally built package instead:
 
-### Basic Usage Example
+```bash
+mvn clean package
+$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
+```
 
-Create an index with MinHash field mapping and analyzer:
+Use `opensearch-plugin remove minhash` to uninstall.
+
+## Getting Started
+
+A `minhash` field does not use the index analyzer. It analyzes its input with the
+analyzer named by `minhash_analyzer`, whose last token filter must be `minhash`.
+The usual pattern is to `copy_to` the signature field from the text field it should
+summarize.
 
 ```bash
 curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
@@ -81,7 +61,7 @@ curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
       "analyzer": {
         "minhash_analyzer": {
           "type": "custom",
-          "tokenizer": "standard", 
+          "tokenizer": "standard",
           "filter": ["lowercase", "minhash"]
         }
       }
@@ -89,21 +69,12 @@ curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
   },
   "mappings": {
     "properties": {
-      "title": {
-        "type": "text",
-        "copy_to": "title_minhash"
-      },
       "content": {
         "type": "text",
         "copy_to": "content_minhash"
       },
-      "title_minhash": {
-        "type": "minhash",
-        "store": true,
-        "minhash_analyzer": "minhash_analyzer"
-      },
       "content_minhash": {
-        "type": "minhash", 
+        "type": "minhash",
         "store": true,
         "minhash_analyzer": "minhash_analyzer"
       }
@@ -112,34 +83,42 @@ curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
 }'
 ```
 
-### Add Documents with Automatic MinHash Generation
+Index a couple of documents that differ only slightly:
 
 ```bash
-# Add first document
-curl -XPUT "localhost:9200/documents/_doc/1" -H 'Content-Type: application/json' -d '{
-  "title": "OpenSearch Tutorial",
+curl -XPUT 'localhost:9200/documents/_doc/1' -H 'Content-Type: application/json' -d '{
   "content": "OpenSearch is a distributed search and analytics engine based on Apache Lucene."
 }'
 
-# Add similar document
-curl -XPUT "localhost:9200/documents/_doc/2" -H 'Content-Type: application/json' -d '{
-  "title": "OpenSearch Guide", 
+curl -XPUT 'localhost:9200/documents/_doc/2' -H 'Content-Type: application/json' -d '{
   "content": "OpenSearch is a distributed search and analytics engine built on Apache Lucene."
 }'
 ```
 
-### Retrieve Documents with MinHash Values
+Because the field is stored, the signature can be read back directly:
 
 ```bash
-curl -XGET "localhost:9200/documents/_doc/1?pretty&stored_fields=title_minhash,content_minhash,_source"
+curl -XGET 'localhost:9200/documents/_doc/1?pretty&stored_fields=content_minhash&_source=true'
 ```
 
-## ⚙️ Advanced Configuration
+## Configuration
 
-### Custom MinHash Filter Parameters
+### `minhash` token filter
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `seed`    | `0`     | Seed for the murmur3 hash functions. Signatures are only comparable when they were generated with the same seed. |
+| `bit`     | `1`     | Number of bits kept from each hash value. |
+| `size`    | `128`   | Number of hash functions. The resulting signature is `bit * size` bits long. |
+
+The filter replaces the whole token stream with a single token holding the
+signature, so it has to be the last filter in the chain.
+
+Larger `size` and `bit` values make the signature a more faithful estimate of
+Jaccard similarity at the cost of a longer signature.
 
 ```bash
-curl -XPUT 'localhost:9200/advanced_documents' -H 'Content-Type: application/json' -d '{
+curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
   "settings": {
     "analysis": {
       "filter": {
@@ -158,10 +137,30 @@ curl -XPUT 'localhost:9200/advanced_documents' -H 'Content-Type: application/jso
         }
       }
     }
-  },
+  }
+}'
+```
+
+### `minhash` field type
+
+| Parameter          | Default    | Description |
+|--------------------|------------|-------------|
+| `minhash_analyzer` | `standard` | Analyzer used to generate the signature. Set this to an analyzer whose last filter is `minhash`. |
+| `bit_string`       | `false`    | Store the signature as a string of `0`/`1` characters instead of Base64. |
+| `store`            | `false`    | Store the field so it can be returned via `stored_fields`. |
+| `index`            | `true`     | Index the signature. |
+| `doc_values`       | `true`     | Enable doc values, required for aggregations and collapsing. |
+| `null_value`       | none       | Value substituted for a null input. |
+| `copy_bits_to`     | none       | Deprecated. Copies the bit string to the named fields. |
+
+A single source field can feed several signature fields, for example one Base64
+signature for exact grouping and one bit string for inspection:
+
+```bash
+curl -XPUT 'localhost:9200/documents' -H 'Content-Type: application/json' -d '{
   "mappings": {
     "properties": {
-      "text": {
+      "content": {
         "type": "text",
         "copy_to": ["minhash_binary", "minhash_bitstring"]
       },
@@ -181,89 +180,15 @@ curl -XPUT 'localhost:9200/advanced_documents' -H 'Content-Type: application/jso
 }'
 ```
 
-### Multiple Analyzers for Different Use Cases
+## Examples
+
+### Finding duplicates
+
+Documents that share a signature are near-duplicates. A `terms` aggregation with
+`min_doc_count` reports the groups that contain more than one document:
 
 ```bash
-curl -XPUT 'localhost:9200/multi_analyzer_index' -H 'Content-Type: application/json' -d '{
-  "settings": {
-    "analysis": {
-      "filter": {
-        "fast_minhash": {
-          "type": "minhash",
-          "size": 32,
-          "bit": 1
-        },
-        "precise_minhash": {
-          "type": "minhash", 
-          "size": 256,
-          "bit": 2
-        }
-      },
-      "analyzer": {
-        "fast_analyzer": {
-          "type": "custom",
-          "tokenizer": "keyword",
-          "filter": ["fast_minhash"]
-        },
-        "precise_analyzer": {
-          "type": "custom",
-          "tokenizer": "standard",
-          "filter": ["lowercase", "precise_minhash"]
-        }
-      }
-    }
-  },
-  "mappings": {
-    "properties": {
-      "content": {
-        "type": "text",
-        "copy_to": ["fast_hash", "precise_hash"]
-      },
-      "fast_hash": {
-        "type": "minhash",
-        "minhash_analyzer": "fast_analyzer"
-      },
-      "precise_hash": {
-        "type": "minhash", 
-        "minhash_analyzer": "precise_analyzer"
-      }
-    }
-  }
-}'
-```
-
-## 🔧 Configuration Reference
-
-### MinHash Token Filter Parameters
-
-| Parameter | Type    | Default | Range | Description |
-|-----------|---------|---------|--------|-------------|
-| `type`    | string  | -       | -      | Must be "minhash" |
-| `seed`    | integer | 0       | 0+     | Seed value for hash functions |
-| `bit`     | integer | 1       | 1-8    | Number of bits per hash value |
-| `size`    | integer | 128     | 1-1024 | Number of hash functions to use |
-
-**⚠️ Important**: The minhash filter must be the **last filter** in the analyzer chain.
-
-### MinHash Field Mapper Parameters
-
-| Parameter          | Type    | Default | Description |
-|-------------------|---------|---------|-------------|
-| `type`            | string  | -       | Must be "minhash" |
-| `minhash_analyzer`| string  | -       | **Required**: Analyzer for MinHash generation |
-| `store`           | boolean | false   | Whether to store the field value |
-| `bit_string`      | boolean | false   | Store as bit string instead of base64 |
-| `copy_bits_to`    | array   | -       | **Deprecated**: Fields to copy bit string to |
-
-## 📊 Practical Use Cases
-
-### 1. Document Deduplication
-
-Find and remove duplicate documents using MinHash signatures:
-
-```bash
-# Search for documents with identical MinHash values
-curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: application/json' -d '{
+curl -XGET 'localhost:9200/documents/_search?pretty' -H 'Content-Type: application/json' -d '{
   "size": 0,
   "aggs": {
     "duplicates": {
@@ -276,7 +201,7 @@ curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: applicati
         "documents": {
           "top_hits": {
             "size": 10,
-            "_source": ["title", "content"]
+            "_source": ["content"]
           }
         }
       }
@@ -285,201 +210,49 @@ curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: applicati
 }'
 ```
 
-### 2. Similarity-based Grouping
+### Collapsing near-duplicates in results
 
-Collapse similar documents using field collapsing:
+Field collapsing keeps one representative per signature and exposes the rest as
+inner hits:
 
 ```bash
-curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: application/json' -d '{
-  "query": {
-    "match_all": {}
-  },
+curl -XGET 'localhost:9200/documents/_search?pretty' -H 'Content-Type: application/json' -d '{
+  "query": { "match_all": {} },
   "collapse": {
     "field": "content_minhash",
     "inner_hits": {
       "name": "similar_docs",
-      "size": 5,
-      "sort": [{"_score": {"order": "desc"}}]
-    }
-  },
-  "sort": [{"_score": {"order": "desc"}}]
-}'
-```
-
-### 3. Content Clustering Analysis
-
-Analyze content distribution using MinHash aggregations:
-
-```bash
-curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: application/json' -d '{
-  "size": 0,
-  "aggs": {
-    "content_clusters": {
-      "terms": {
-        "field": "content_minhash",
-        "size": 50
-      },
-      "aggs": {
-        "cluster_size": {
-          "value_count": {
-            "field": "content_minhash"
-          }
-        },
-        "sample_docs": {
-          "top_hits": {
-            "size": 3,
-            "_source": ["title"]
-          }
-        }
-      }
+      "size": 5
     }
   }
 }'
 ```
 
-## 🛠️ Development
+## Building from Source
 
-### Prerequisites
-
-- **Java 21+**: OpenJDK or Oracle JDK
-- **Maven 3.6+**: Build automation
-- **OpenSearch 3.8.0**: Target platform
-
-### Project Structure
-
-```
-opensearch-minhash/
-├── src/main/java/org/codelibs/opensearch/minhash/
-│   ├── MinHashPlugin.java                     # Plugin entry point
-│   ├── index/
-│   │   ├── analysis/
-│   │   │   └── MinHashTokenFilterFactory.java # Token filter implementation  
-│   │   └── mapper/
-│   │       └── MinHashFieldMapper.java        # Field mapper implementation
-│   └── plugin-metadata/
-│       └── plugin-descriptor.properties       # Plugin metadata
-├── src/test/java/                             # Unit tests
-├── pom.xml                                    # Maven configuration
-└── README.md                                  # This file
-```
-
-### Building the Plugin
+Java 21 and Maven 3.6 or later are required.
 
 ```bash
-# Full clean build
+git clone https://github.com/codelibs/opensearch-minhash.git
+cd opensearch-minhash
 mvn clean package
-
-# Skip tests for faster builds
-mvn package -DskipTests=true
-
-# Create distribution zip
-mvn clean package assembly:single
-
-# Format license headers
-mvn license:format
 ```
 
-### Running Tests
+The plugin package is written to `target/releases/`.
 
 ```bash
-# Run all unit tests
-mvn test
-
-# Run specific test class
-mvn test -Dtest=MinHashPluginTest
-
-# Run tests with verbose output
-mvn test -X
+mvn test                              # run the test suite
+mvn test -Dtest=MinHashPluginTest     # run a single test class
+mvn license:format                    # apply license headers
 ```
 
-### Development Workflow
+## Contributing
 
-1. **Setup Development Environment**:
-   ```bash
-   git clone https://github.com/codelibs/opensearch-minhash.git
-   cd opensearch-minhash
-   mvn clean compile
-   ```
+Issues and pull requests are welcome at
+[github.com/codelibs/opensearch-minhash](https://github.com/codelibs/opensearch-minhash).
+Please add tests for behaviour changes and make sure `mvn test` passes before
+opening a pull request.
 
-2. **Make Changes**: Edit source files in `src/main/java/`
+## License
 
-3. **Test Changes**: 
-   ```bash
-   mvn test
-   mvn integration-test  # If integration tests exist
-   ```
-
-4. **Build Plugin**:
-   ```bash
-   mvn clean package
-   ```
-
-5. **Install for Testing**:
-   ```bash
-   $OPENSEARCH_HOME/bin/opensearch-plugin remove opensearch-minhash  # Remove old version
-   $OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
-   ```
-
-### Code Style Guidelines
-
-- Follow standard Java naming conventions
-- Use meaningful variable and method names
-- Add comprehensive Javadoc for public APIs
-- Include unit tests for new functionality
-- Maintain license headers (automatically managed by Maven)
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these guidelines:
-
-### Getting Started
-
-1. **Fork the repository** on GitHub
-2. **Create a feature branch**: `git checkout -b feature/my-new-feature`
-3. **Make your changes** following the code style guidelines
-4. **Add tests** for new functionality
-5. **Run the full test suite**: `mvn test`
-6. **Commit your changes**: `git commit -am 'Add some feature'`
-7. **Push to the branch**: `git push origin feature/my-new-feature`
-8. **Submit a pull request** with a clear description
-
-### Pull Request Guidelines
-
-- Provide a clear description of the changes
-- Include relevant test cases
-- Ensure all tests pass
-- Update documentation if necessary
-- Reference any related issues
-
-## 📞 Support & Community
-
-### Getting Help
-
-- **📖 Documentation**: [OpenSearch Plugin Documentation](https://opensearch.org/docs/latest/plugins/)
-- **🐛 Issues**: [GitHub Issues](https://github.com/codelibs/opensearch-minhash/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/codelibs/opensearch-minhash/discussions)
-
-### Reporting Issues
-
-When reporting issues, please include:
-
-- OpenSearch version
-- Plugin version  
-- Java version
-- Operating system
-- Complete error messages
-- Steps to reproduce
-- Sample data/configuration if applicable
-
-### Performance Tips
-
-- Use appropriate `size` values (32-256) based on your accuracy needs
-- Consider `bit` values of 1-2 for most use cases
-- Store MinHash fields only when necessary
-- Use `copy_to` for automatic field population
-- Monitor memory usage with large hash sizes
-
-## 📄 License
-
-This project is licensed under the **Apache License 2.0** - see the [LICENSE](LICENSE) file for details.
-
+Licensed under the Apache License, Version 2.0. See [LICENSE](LICENSE) for details.

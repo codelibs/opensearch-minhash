@@ -28,6 +28,7 @@ The plugin integrates seamlessly with OpenSearch's analysis pipeline through thr
 
 | Plugin Version | OpenSearch Version | Java Version | Lucene Version |
 |---------------|--------------------|--------------|----------------|
+| 3.8.x         | 3.8.0              | 21+          | 10.5.0         |
 | 3.7.x         | 3.7.0              | 21+          | 10.4.0         |
 
 [📦 All Versions in Maven Repository](https://repo1.maven.org/maven2/org/codelibs/opensearch/opensearch-minhash/)
@@ -37,7 +38,7 @@ The plugin integrates seamlessly with OpenSearch's analysis pipeline through thr
 ### Quick Install from Maven Central
 
 ```bash
-$OPENSEARCH_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:3.7.0
+$OPENSEARCH_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:3.8.0
 ```
 
 ### Build and Install from Source
@@ -51,7 +52,7 @@ cd opensearch-minhash
 mvn clean package
 
 # Install from local build
-$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.7.0-SNAPSHOT.zip
+$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
 
 # Restart OpenSearch
 $OPENSEARCH_HOME/bin/opensearch-node restart
@@ -342,7 +343,7 @@ curl -XGET "localhost:9200/documents/_search?pretty" -H 'Content-Type: applicati
 
 - **Java 21+**: OpenJDK or Oracle JDK
 - **Maven 3.6+**: Build automation
-- **OpenSearch 3.7.0**: Target platform
+- **OpenSearch 3.8.0**: Target platform
 
 ### Project Structure
 
@@ -416,7 +417,7 @@ mvn test -X
 5. **Install for Testing**:
    ```bash
    $OPENSEARCH_HOME/bin/opensearch-plugin remove opensearch-minhash  # Remove old version
-   $OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.7.0-SNAPSHOT.zip
+   $OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
    ```
 
 ### Code Style Guidelines

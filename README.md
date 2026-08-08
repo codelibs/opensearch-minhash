@@ -22,13 +22,15 @@ The plugin registers two components:
 | 3.8.x          | 3.8.0              | 10.5.0         | 21+          |
 | 3.7.x          | 3.7.0              | 10.4.0         | 21+          |
 
-Released versions are listed on
+Released versions are listed in the
+[CodeLibs repository](https://maven.codelibs.org/release/org/codelibs/opensearch/opensearch-minhash/).
+Version 3.8.0 and earlier were published to
 [Maven Central](https://central.sonatype.com/artifact/org.codelibs.opensearch/opensearch-minhash/versions).
 
 ## Installation
 
 ```bash
-$OPENSEARCH_HOME/bin/opensearch-plugin install org.codelibs.opensearch:opensearch-minhash:3.8.0
+$OPENSEARCH_HOME/bin/opensearch-plugin install https://maven.codelibs.org/release/org/codelibs/opensearch/opensearch-minhash/3.8.1/opensearch-minhash-3.8.1.zip
 ```
 
 Restart the node, then confirm that the plugin is loaded:
@@ -42,7 +44,7 @@ To install a locally built package instead:
 
 ```bash
 mvn clean package
-$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.0-SNAPSHOT.zip
+$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.1-SNAPSHOT.zip
 ```
 
 Use `opensearch-plugin remove minhash` to uninstall.

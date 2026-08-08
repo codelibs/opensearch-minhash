@@ -47,6 +47,18 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
+		<extensions>
+			<!-- Wagon provider for the scpexe:// transport used by distributionManagement.
+			     It drives the external ssh and scp commands rather than an embedded SSH
+			     client, so key handling follows the system OpenSSH configuration. The
+			     embedded alternative, wagon-ssh, depends on com.jcraft:jsch 0.1.55, whose
+			     only key types are DSA, ECDSA, RSA and PKCS8. -->
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ssh-external</artifactId>
+				<version>3.5.3</version>
+			</extension>
+		</extensions>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -137,30 +149,55 @@
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>3.2.7</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.sonatype.central</groupId>
-				<artifactId>central-publishing-maven-plugin</artifactId>
-				<version>0.11.0</version>
-				<extensions>true</extensions>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>3.3.1</version>
 				<configuration>
-					<publishingServerId>central</publishingServerId>
+					<releaseProfiles>release</releaseProfiles>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>3.2.8</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+								<configuration>
+									<bestPractices>true</bestPractices>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+	<!-- This plugin is distributed through maven.codelibs.org instead of Maven
+	     Central. The scpexe transport comes from the wagon-ssh-external build
+	     extension declared above. -->
+	<distributionManagement>
+		<repository>
+			<id>codelibs-repo</id>
+			<name>CodeLibs Repository</name>
+			<url>scpexe://maven.codelibs.org/var/www/maven/release</url>
+		</repository>
+		<snapshotRepository>
+			<id>codelibs-snapshots</id>
+			<name>CodeLibs Snapshot Repository</name>
+			<url>scpexe://maven.codelibs.org/var/www/maven/snapshot</url>
+		</snapshotRepository>
+	</distributionManagement>
 	<repositories>
 		<repository>
 			<id>snapshots.central.sonatype.com</id>
@@ -175,7 +212,18 @@
 		<repository>
 			<id>codelibs.org</id>
 			<name>CodeLibs Repository</name>
-			<url>https://maven.codelibs.org/</url>
+			<url>https://maven.codelibs.org/release/</url>
+		</repository>
+		<repository>
+			<id>codelibs.org.snapshot</id>
+			<name>CodeLibs Snapshot Repository</name>
+			<url>https://maven.codelibs.org/snapshot/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
 		</repository>
 	</repositories>
 	<dependencies>

@@ -19,6 +19,7 @@ The plugin registers two components:
 
 | Plugin Version | OpenSearch Version | Lucene Version | Java Version |
 |----------------|--------------------|----------------|--------------|
+| 3.9.x          | 3.9.0              | 10.5.1         | 21+          |
 | 3.8.x          | 3.8.0              | 10.5.0         | 21+          |
 | 3.7.x          | 3.7.0              | 10.4.0         | 21+          |
 
@@ -30,7 +31,7 @@ Version 3.8.0 and earlier were published to
 ## Installation
 
 ```bash
-$OPENSEARCH_HOME/bin/opensearch-plugin install https://maven.codelibs.org/release/org/codelibs/opensearch/opensearch-minhash/3.8.1/opensearch-minhash-3.8.1.zip
+$OPENSEARCH_HOME/bin/opensearch-plugin install https://maven.codelibs.org/release/org/codelibs/opensearch/opensearch-minhash/3.9.0/opensearch-minhash-3.9.0.zip
 ```
 
 Restart the node, then confirm that the plugin is loaded:
@@ -44,7 +45,7 @@ To install a locally built package instead:
 
 ```bash
 mvn clean package
-$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.8.1-SNAPSHOT.zip
+$OPENSEARCH_HOME/bin/opensearch-plugin install file:target/releases/opensearch-minhash-3.9.0-SNAPSHOT.zip
 ```
 
 Use `opensearch-plugin remove minhash` to uninstall.

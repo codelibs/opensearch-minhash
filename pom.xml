@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.codelibs.opensearch</groupId>
 	<artifactId>opensearch-minhash</artifactId>
-	<version>3.9.1-SNAPSHOT</version>
+	<version>3.10.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<description>
 		An OpenSearch plugin that provides b-bit MinHash algorithm support for efficient similarity detection and approximate nearest neighbor search. Useful for deduplication, clustering, and large-scale similarity analysis in OpenSearch indices.
